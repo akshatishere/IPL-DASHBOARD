@@ -1,7 +1,10 @@
 'use client'
 
 import { PointsTableEntry } from '@/types'
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus, Trophy } from 'lucide-react'
+import { FORM_COLORS, POSITION_COLORS, POINTS_TABLE_HEADERS, COMMON_CLASSES } from '@/constants'
+import TeamDisplay from './ui/TeamDisplay'
+import EmptyState from './ui/EmptyState'
 
 interface PointsTableProps {
   pointsTable: PointsTableEntry[]
@@ -9,101 +12,59 @@ interface PointsTableProps {
 
 export default function PointsTable({ pointsTable }: PointsTableProps) {
   const getFormColor = (result: string) => {
-    switch (result) {
-      case 'W': return 'bg-green-100 text-green-800'
-      case 'L': return 'bg-red-100 text-red-800'
-      case 'T': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
+    return FORM_COLORS[result as keyof typeof FORM_COLORS] || FORM_COLORS.default
   }
 
   return (
-    <div className="card overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
+    <div className={`${COMMON_CLASSES.card} ${COMMON_CLASSES.overflowHidden}`}>
+      <div className={COMMON_CLASSES.overflowXAuto}>
+        <table className={COMMON_CLASSES.wFull}>
+          <thead className={COMMON_CLASSES.bgGray50}>
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Pos
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Team
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                P
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                W
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                L
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                T
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Pts
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                NRR
-              </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Form
-              </th>
+              {POINTS_TABLE_HEADERS.map((header) => (
+                <th 
+                  key={header.key}
+                  className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} text-${header.align} ${COMMON_CLASSES.textXs} ${COMMON_CLASSES.fontMedium} ${COMMON_CLASSES.textGray500} uppercase tracking-wider`}
+                >
+                  {header.label}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className={`${COMMON_CLASSES.bgWhite} ${COMMON_CLASSES.divideY} ${COMMON_CLASSES.divideGray200}`}>
             {pointsTable.map((entry, index) => (
               <tr key={entry.team.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="flex items-center">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap}`}>
+                  <div className={COMMON_CLASSES.flexStart}>
                     <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
-                      index < 4 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      index < 4 ? POSITION_COLORS.top4 : POSITION_COLORS.default
                     }`}>
                       {entry.position}
                     </span>
                   </div>
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8">
-                      {entry.team.logo && (
-                        <img 
-                          className="h-8 w-8 rounded-full" 
-                          src={entry.team.logo} 
-                          alt={entry.team.name}
-                        />
-                      )}
-                    </div>
-                    <div className="ml-3">
-                      <div className="text-sm font-medium text-gray-900">
-                        {entry.team.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {entry.team.shortName}
-                      </div>
-                    </div>
-                  </div>
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap}`}>
+                  <TeamDisplay team={entry.team} size="medium" />
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-gray-900">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap} text-center text-sm text-gray-900`}>
                   {entry.played}
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-gray-900">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap} text-center text-sm text-gray-900`}>
                   {entry.won}
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-gray-900">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap} text-center text-sm text-gray-900`}>
                   {entry.lost}
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-center text-sm text-gray-900">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap} text-center text-sm text-gray-900`}>
                   {entry.tied}
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-center">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap} text-center`}>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {entry.points}
                   </span>
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-center text-sm">
-                  <div className="flex items-center justify-center">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap} text-center text-sm`}>
+                  <div className={COMMON_CLASSES.flexCenter}>
                     {entry.netRunRate > 0 ? (
                       <TrendingUp className="w-4 h-4 text-green-500" />
                     ) : entry.netRunRate < 0 ? (
@@ -119,7 +80,7 @@ export default function PointsTable({ pointsTable }: PointsTableProps) {
                     </span>
                   </div>
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap text-center">
+                <td className={`${COMMON_CLASSES.px4} ${COMMON_CLASSES.py3} ${COMMON_CLASSES.whitespaceNowrap} text-center`}>
                   <div className="flex space-x-1">
                     {entry.form.map((result, i) => (
                       <span
@@ -138,11 +99,7 @@ export default function PointsTable({ pointsTable }: PointsTableProps) {
       </div>
       
       {pointsTable.length === 0 && (
-        <div className="text-center py-8">
-          {/* Trophy icon is not imported, so it's commented out */}
-          {/* <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" /> */}
-          <p className="text-gray-600">No points table data available</p>
-        </div>
+        <EmptyState type="pointsTable" icon={Trophy} />
       )}
     </div>
   )

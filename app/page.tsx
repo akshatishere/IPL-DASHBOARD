@@ -1,11 +1,13 @@
 'use client'
 
-import { RefreshCw, Clock, Trophy, Calendar, TrendingUp, Users } from 'lucide-react'
+import { RefreshCw, Clock, Trophy, Calendar, TrendingUp, Users, Bell } from 'lucide-react'
 import { useIPLData } from '@/hooks/useIPLData'
+import { useNotifications } from '@/hooks/useNotifications'
 import Link from 'next/link'
 
 export default function Home() {
-  const { liveMatch, upcomingMatches, pointsTable, schedule, loading, lastUpdated, refetch } = useIPLData()
+  const { liveMatch, upcomingMatches, pointsTable, schedule, loading, lastUpdated, refetch, cacheStats } = useIPLData()
+  const { addTestNotification } = useNotifications()
 
   const stats = [
     {
@@ -63,6 +65,13 @@ export default function Home() {
       icon: Calendar,
       href: '/schedule',
       color: 'from-blue-600 to-blue-800'
+    },
+    {
+      title: 'Analytics & Insights',
+      description: 'Advanced charts, historical data, and performance analytics',
+      icon: TrendingUp,
+      href: '/analytics',
+      color: 'from-purple-600 to-purple-800'
     }
   ]
 
@@ -82,13 +91,22 @@ export default function Home() {
                 {lastUpdated.toLocaleTimeString()}
               </p>
             </div>
-            <button
-              onClick={refetch}
-              disabled={loading}
-              className="p-2 rounded-full bg-ipl-blue hover:bg-blue-700 disabled:opacity-50 transition-colors text-white"
-            >
-              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={addTestNotification}
+                className="p-2 rounded-full bg-green-600 hover:bg-green-700 transition-colors text-white"
+                title="Add Test Notification"
+              >
+                <Bell className="w-5 h-5" />
+              </button>
+              <button
+                onClick={refetch}
+                disabled={loading}
+                className="p-2 rounded-full bg-ipl-blue hover:bg-blue-700 disabled:opacity-50 transition-colors text-white"
+              >
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -102,11 +120,30 @@ export default function Home() {
         </div>
       ) : (
         <>
+          {/* Cache Status */}
+          {cacheStats && (
+            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-blue-900">Cache Status</h3>
+                  <p className="text-sm text-blue-700">
+                    Cached entries: {cacheStats.size} | 
+                    Keys: {cacheStats.keys.slice(0, 3).join(', ')}
+                    {cacheStats.keys.length > 3 && '...'}
+                  </p>
+                </div>
+                <div className="text-xs text-blue-600">
+                  Data will refresh every 5 minutes
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {stats.map((stat) => (
               <Link key={stat.name} href={stat.href}>
-                <div className="card hover:shadow-lg transition-shadow cursor-pointer">
+                <div className="card hover:shadow-lg transition-shadow cursor-pointer min-h-[125px]">
                   <div className="flex items-center">
                     <div className={`p-3 rounded-lg ${stat.bgColor}`}>
                       <stat.icon className={`w-6 h-6 ${stat.color}`} />
@@ -157,7 +194,7 @@ export default function Home() {
           {/* Quick Actions */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {quickActions.map((action) => (
                 <Link key={action.title} href={action.href}>
                   <div className={`card bg-gradient-to-r ${action.color} text-white hover:shadow-lg transition-shadow cursor-pointer h-full`}>

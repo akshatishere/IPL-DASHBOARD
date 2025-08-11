@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import axios from 'axios'
-import * as cheerio from 'cheerio'
-import { Match, Team, PointsTableEntry } from '@/types'
+import { Match, Team, PointsTableEntry, HistoricalMatch, TeamStats } from '@/types'
+import cache from '@/utils/cache'
 
 // Dummy data as fallback
 const dummyTeams: Team[] = [
@@ -33,7 +32,7 @@ const dummyMatches: Match[] = [
     team1: dummyTeams[2],
     team2: dummyTeams[3],
     date: '2024-03-23',
-    time: '15:30',
+    time: '19:30',
     venue: 'M. Chinnaswamy Stadium, Bangalore',
     status: 'upcoming',
     matchNumber: 'Match 2'
@@ -42,8 +41,8 @@ const dummyMatches: Match[] = [
     id: '3',
     team1: dummyTeams[4],
     team2: dummyTeams[5],
-    date: '2024-03-23',
-    time: '19:30',
+    date: '2024-03-24',
+    time: '15:30',
     venue: 'Arun Jaitley Stadium, Delhi',
     status: 'upcoming',
     matchNumber: 'Match 3'
@@ -52,8 +51,8 @@ const dummyMatches: Match[] = [
     id: '4',
     team1: dummyTeams[6],
     team2: dummyTeams[7],
-    date: '2024-03-24',
-    time: '15:30',
+    date: '2024-03-25',
+    time: '19:30',
     venue: 'Sawai Mansingh Stadium, Jaipur',
     status: 'upcoming',
     matchNumber: 'Match 4'
@@ -62,7 +61,7 @@ const dummyMatches: Match[] = [
     id: '5',
     team1: dummyTeams[8],
     team2: dummyTeams[9],
-    date: '2024-03-24',
+    date: '2024-03-26',
     time: '19:30',
     venue: 'Narendra Modi Stadium, Ahmedabad',
     status: 'upcoming',
@@ -183,54 +182,187 @@ const dummyPointsTable: PointsTableEntry[] = [
   }
 ]
 
-async function scrapeIPLData() {
-  try {
-    // Attempt to scrape from iplt20.com
-    const response = await axios.get('https://www.iplt20.com/', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      },
-      timeout: 10000
-    })
+// Enhanced dummy data for bonus features
+const dummyHistoricalMatches: HistoricalMatch[] = [
+  {
+    id: 'hist1',
+    team1: dummyTeams[0],
+    team2: dummyTeams[1],
+    date: '2024-03-15',
+    time: '19:30',
+    venue: 'Wankhede Stadium, Mumbai',
+    status: 'completed',
+    season: '2024',
+    result: 'Mumbai Indians won by 5 wickets',
+    matchNumber: 'Match 15',
+    detailedScore: {
+      team1: { runs: 185, wickets: 4, overs: 20 },
+      team2: { runs: 182, wickets: 8, overs: 20 }
+    },
+    keyMoments: [
+      { time: '19:45', event: 'Toss', description: 'CSK won the toss and chose to bat' },
+      { time: '20:15', event: 'First Wicket', description: 'Ruturaj Gaikwad caught behind' },
+      { time: '21:30', event: 'Milestone', description: 'MS Dhoni reaches 50' }
+    ],
+    playerOfTheMatch: 'Hardik Pandya',
+    attendance: 45000
+  },
+  {
+    id: 'hist2',
+    team1: dummyTeams[2],
+    team2: dummyTeams[3],
+    date: '2024-03-14',
+    time: '19:30',
+    venue: 'M. Chinnaswamy Stadium, Bangalore',
+    status: 'completed',
+    season: '2024',
+    result: 'Royal Challengers Bangalore won by 8 wickets',
+    matchNumber: 'Match 14',
+    detailedScore: {
+      team1: { runs: 165, wickets: 6, overs: 20 },
+      team2: { runs: 168, wickets: 2, overs: 18.2 }
+    },
+    keyMoments: [
+      { time: '19:45', event: 'Toss', description: 'RCB won the toss and chose to bowl' },
+      { time: '20:30', event: 'Partnership', description: 'Kohli and Maxwell 100-run partnership' }
+    ],
+    playerOfTheMatch: 'Virat Kohli',
+    attendance: 38000
+  },
+  {
+    id: 'hist3',
+    team1: dummyTeams[4],
+    team2: dummyTeams[5],
+    date: '2024-03-13',
+    time: '19:30',
+    venue: 'Arun Jaitley Stadium, Delhi',
+    status: 'completed',
+    season: '2024',
+    result: 'Delhi Capitals won by 3 wickets',
+    matchNumber: 'Match 13',
+    detailedScore: {
+      team1: { runs: 175, wickets: 7, overs: 20 },
+      team2: { runs: 178, wickets: 7, overs: 19.5 }
+    },
+    keyMoments: [
+      { time: '19:45', event: 'Toss', description: 'DC won the toss and chose to bowl' },
+      { time: '21:00', event: 'Last Over', description: 'Thrilling finish with 3 balls to spare' }
+    ],
+    playerOfTheMatch: 'Rishabh Pant',
+    attendance: 42000
+  }
+]
 
-    const $ = cheerio.load(response.data)
+const dummyTeamStats: TeamStats[] = [
+  {
+    team: dummyTeams[0],
+    totalMatches: 250,
+    wins: 140,
+    losses: 110,
+    winPercentage: 56,
+    averageScore: 165,
+    highestScore: 223,
+    lowestScore: 87,
+    totalRuns: 41250,
+    totalWickets: 1250,
+    seasonPerformance: [
+      { season: '2024', position: 1, points: 8 },
+      { season: '2023', position: 3, points: 16 },
+      { season: '2022', position: 2, points: 18 }
+    ]
+  },
+  {
+    team: dummyTeams[1],
+    totalMatches: 245,
+    wins: 135,
+    losses: 110,
+    winPercentage: 55,
+    averageScore: 162,
+    highestScore: 218,
+    lowestScore: 79,
+    totalRuns: 39690,
+    totalWickets: 1220,
+    seasonPerformance: [
+      { season: '2024', position: 2, points: 8 },
+      { season: '2023', position: 1, points: 20 },
+      { season: '2022', position: 4, points: 14 }
+    ]
+  },
+  {
+    team: dummyTeams[2],
+    totalMatches: 240,
+    wins: 120,
+    losses: 120,
+    winPercentage: 50,
+    averageScore: 158,
+    highestScore: 263,
+    lowestScore: 82,
+    totalRuns: 37920,
+    totalWickets: 1180,
+    seasonPerformance: [
+      { season: '2024', position: 3, points: 6 },
+      { season: '2023', position: 6, points: 12 },
+      { season: '2022', position: 3, points: 16 }
+    ]
+  }
+]
+
+async function getIPLData() {
+  try {
+    // Check cache first
+    const cacheKey = 'ipl_data'
+    const cachedData = cache.get(cacheKey)
+    if (cachedData) {
+      console.log('Returning cached data')
+      return cachedData
+    }
+
+    console.log('Generating fresh dummy data')
     
-    // Note: This is a basic scraping attempt. The actual selectors would need to be
-    // updated based on the current structure of iplt20.com
-    // For now, we'll return dummy data and log the attempt
-    
-    console.log('Scraping attempted from iplt20.com')
-    
-    // Return dummy data for now
-    return {
+    // Prepare data with dummy content
+    const data = {
       liveMatch: null, // No live match in dummy data
       upcomingMatches: dummyMatches.slice(0, 3),
       pointsTable: dummyPointsTable,
-      schedule: dummyMatches
+      schedule: dummyMatches,
+      historicalMatches: dummyHistoricalMatches,
+      teamStats: dummyTeamStats
     }
+
+    // Cache the data for 5 minutes
+    cache.set(cacheKey, data, 5 * 60 * 1000)
+    
+    return data
     
   } catch (error) {
-    console.error('Error scraping IPL data:', error)
-    console.log('Falling back to dummy data')
+    console.error('Error generating IPL data:', error)
     
     // Return dummy data as fallback
-    return {
+    const fallbackData = {
       liveMatch: null,
       upcomingMatches: dummyMatches.slice(0, 3),
       pointsTable: dummyPointsTable,
-      schedule: dummyMatches
+      schedule: dummyMatches,
+      historicalMatches: dummyHistoricalMatches,
+      teamStats: dummyTeamStats
     }
+
+    // Cache fallback data for 2 minutes
+    cache.set('ipl_data', fallbackData, 2 * 60 * 1000)
+    
+    return fallbackData
   }
 }
 
 export async function GET() {
   try {
-    const data = await scrapeIPLData()
+    const data = await getIPLData()
     
     return NextResponse.json({
       success: true,
       ...data,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
+      cacheStats: cache.getStats()
     })
   } catch (error) {
     console.error('API Error:', error)
@@ -242,6 +374,8 @@ export async function GET() {
       upcomingMatches: dummyMatches.slice(0, 3),
       pointsTable: dummyPointsTable,
       schedule: dummyMatches,
+      historicalMatches: dummyHistoricalMatches,
+      teamStats: dummyTeamStats,
       lastUpdated: new Date().toISOString()
     }, { status: 500 })
   }
