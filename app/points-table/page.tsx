@@ -1,11 +1,13 @@
 'use client'
 
-import { RefreshCw, Trophy, TrendingUp, TrendingDown, Minus } from 'lucide-react'
-import { useIPLData } from '@/hooks/useIPLData'
+import { TrendingUp, TrendingDown } from 'lucide-react'
+import { useIPLData } from '@/contexts/IPLDataContext'
 import PointsTable from '@/components/PointsTable'
+import PageHeader from '@/components/PageHeader'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 export default function PointsTablePage() {
-  const { pointsTable, loading, lastUpdated, refetch } = useIPLData()
+  const { pointsTable, loading, lastUpdated } = useIPLData()
 
   const topTeams = pointsTable.slice(0, 4)
   const bottomTeams = pointsTable.slice(-4)
@@ -39,38 +41,15 @@ export default function PointsTablePage() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Points Table</h1>
-            <p className="text-gray-600 mt-2">Team standings and performance metrics</p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-xs text-gray-500">Last updated</p>
-              <p className="text-sm font-medium text-gray-700">
-                {lastUpdated.toLocaleTimeString()}
-              </p>
-            </div>
-            <button
-              onClick={refetch}
-              disabled={loading}
-              className="p-2 rounded-full bg-ipl-blue hover:bg-blue-700 disabled:opacity-50 transition-colors text-white"
-            >
-              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Points Table"
+        description="Team standings and performance metrics"
+        lastUpdated={lastUpdated}
+        loading={loading}
+      />
 
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-ipl-blue" />
-            <p className="text-gray-600">Loading points table...</p>
-          </div>
-        </div>
+        <LoadingSpinner message="Loading points table..." />
       ) : (
         <div className="space-y-8">
           {/* Statistics */}
@@ -123,7 +102,7 @@ export default function PointsTablePage() {
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Bottom Teams</h2>
             <div className="card bg-gradient-to-r from-red-50 to-red-100 border-red-200">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {bottomTeams.map((team, index) => (
+                {bottomTeams.map((team) => (
                   <div key={team.team.id} className="text-center">
                     <div className="flex items-center justify-center mb-2">
                       <span className="bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">

@@ -1,9 +1,10 @@
 'use client'
 
-import { useIPLData } from '@/hooks/useIPLData'
+import { useIPLData } from '@/contexts/IPLDataContext'
 import PerformanceCharts from '@/components/PerformanceCharts'
 import HistoricalData from '@/components/HistoricalData'
-import { BarChart3, History, TrendingUp, Database } from 'lucide-react'
+import LoadingSpinner from '@/components/LoadingSpinner'
+import { BarChart3, History, TrendingUp } from 'lucide-react'
 
 export default function AnalyticsPage() {
   const { 
@@ -11,16 +12,13 @@ export default function AnalyticsPage() {
     teamStats, 
     historicalMatches, 
     loading, 
-    error,
-    cacheStats 
+    error
   } = useIPLData()
 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ipl-blue"></div>
-        </div>
+        <LoadingSpinner message="Loading analytics..." />
       </div>
     )
   }
@@ -46,21 +44,6 @@ export default function AnalyticsPage() {
         </p>
       </div>
 
-      {/* Cache Stats */}
-      {cacheStats && (
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center space-x-2 mb-2">
-            <Database className="w-5 h-5 text-blue-600" />
-            <h3 className="font-semibold text-blue-900">Cache Status</h3>
-          </div>
-          <div className="text-sm text-blue-700">
-            Cached entries: {cacheStats.size} | 
-            Keys: {cacheStats.keys.slice(0, 3).join(', ')}
-            {cacheStats.keys.length > 3 && '...'}
-          </div>
-        </div>
-      )}
-
       {/* Feature Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Performance Charts */}
@@ -71,7 +54,6 @@ export default function AnalyticsPage() {
           </div>
           <PerformanceCharts 
             pointsTable={pointsTable} 
-            teamStats={teamStats} 
           />
         </div>
 
@@ -85,48 +67,6 @@ export default function AnalyticsPage() {
             historicalMatches={historicalMatches} 
             teamStats={teamStats} 
           />
-        </div>
-      </div>
-
-      {/* Bonus Features Info */}
-      <div className="mt-12 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-          <TrendingUp className="w-5 h-5 text-green-600" />
-          <span>Bonus Features Implemented</span>
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 bg-white rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-blue-600 mb-1">📊</div>
-            <h4 className="font-semibold text-gray-900 mb-1">Data Visualization</h4>
-            <p className="text-sm text-gray-600">
-              Interactive charts showing team performance, win rates, and form analysis
-            </p>
-          </div>
-          
-          <div className="p-4 bg-white rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-green-600 mb-1">🔔</div>
-            <h4 className="font-semibold text-gray-900 mb-1">Real-time Notifications</h4>
-            <p className="text-sm text-gray-600">
-              Live notifications for match events, wickets, milestones, and results
-            </p>
-          </div>
-          
-          <div className="p-4 bg-white rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-purple-600 mb-1">📈</div>
-            <h4 className="font-semibold text-gray-900 mb-1">Historical Insights</h4>
-            <p className="text-sm text-gray-600">
-              Previous match data, team statistics, and season performance tracking
-            </p>
-          </div>
-          
-          <div className="p-4 bg-white rounded-lg border border-gray-200">
-            <div className="text-2xl font-bold text-orange-600 mb-1">⚡</div>
-            <h4 className="font-semibold text-gray-900 mb-1">Smart Caching</h4>
-            <p className="text-sm text-gray-600">
-              Intelligent caching system to minimize API calls and improve performance
-            </p>
-          </div>
         </div>
       </div>
     </div>

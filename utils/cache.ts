@@ -19,7 +19,6 @@ class Cache {
       return null
     }
 
-    // Check if entry has expired
     if (Date.now() - entry.timestamp > entry.ttl) {
       this.cache.delete(key)
       return null
@@ -40,7 +39,6 @@ class Cache {
     this.cache.clear()
   }
 
-  // Clean up expired entries
   cleanup(): void {
     const now = Date.now()
     this.cache.forEach((entry, key) => {
@@ -50,7 +48,6 @@ class Cache {
     })
   }
 
-  // Get cache statistics
   getStats() {
     return {
       size: this.cache.size,
@@ -59,14 +56,10 @@ class Cache {
   }
 }
 
-// Create a singleton instance
 export const cache = new Cache()
 
-// Clean up expired entries every 5 minutes
-if (typeof window === 'undefined') {
-  setInterval(() => {
-    cache.cleanup()
-  }, 5 * 60 * 1000)
-}
+setInterval(() => {
+  cache.cleanup()
+}, 5 * 60 * 1000)
 
 export default cache 

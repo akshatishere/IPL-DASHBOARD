@@ -196,4 +196,18 @@ export const NOTIFICATION_CONFIG = {
   },
   maxNotifications: 50,
   unreadIndicatorSize: 'w-2 h-2'
+} as const
+
+// Team colors for logo fallbacks
+export const TEAM_COLORS = {
+  MI: 'bg-blue-500',
+  CSK: 'bg-yellow-500',
+  RCB: 'bg-red-500',
+  KKR: 'bg-purple-500',
+  DC: 'bg-blue-600',
+  PBKS: 'bg-red-600',
+  RR: 'bg-pink-500',
+  SRH: 'bg-orange-500',
+  GT: 'bg-blue-400',
+  LSG: 'bg-green-500'
 } as const 

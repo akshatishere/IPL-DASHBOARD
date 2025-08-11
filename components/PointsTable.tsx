@@ -86,8 +86,9 @@ export default function PointsTable({ pointsTable }: PointsTableProps) {
                       <span
                         key={i}
                         className={`inline-flex items-center justify-center w-5 h-5 rounded text-xs font-medium ${getFormColor(result)}`}
+                        title={`${result === 'W' ? 'Win' : result === 'L' ? 'Loss' : 'Tie'}`}
                       >
-                        {result}
+                        {result || '-'}
                       </span>
                     ))}
                   </div>

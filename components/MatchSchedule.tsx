@@ -3,7 +3,7 @@
 import { Match } from '@/types'
 import { Calendar } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
-import { STATUS_COLORS, COMMON_CLASSES, MATCH_DISPLAY_CONFIG } from '@/constants'
+import { COMMON_CLASSES, MATCH_DISPLAY_CONFIG } from '@/constants'
 import MatchCard from './ui/MatchCard'
 import EmptyState from './ui/EmptyState'
 

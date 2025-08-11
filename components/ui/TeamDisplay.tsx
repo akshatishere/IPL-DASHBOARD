@@ -1,5 +1,6 @@
 import { Team } from '@/types'
 import { TEAM_DISPLAY_CONFIG } from '@/constants'
+import TeamLogo from './TeamLogo'
 
 interface TeamDisplayProps {
   team: Team
@@ -18,12 +19,11 @@ export default function TeamDisplay({
 }: TeamDisplayProps) {
   return (
     <div className={`flex items-center ${className}`}>
-      {showLogo && team.logo && (
+      {showLogo && (
         <div className={`flex-shrink-0 ${TEAM_DISPLAY_CONFIG.logoSize[size]}`}>
-          <img 
-            className={`${TEAM_DISPLAY_CONFIG.logoSize[size]} rounded-full`}
-            src={team.logo} 
-            alt={team.name}
+          <TeamLogo 
+            teamShortName={team.shortName}
+            size={size}
           />
         </div>
       )}

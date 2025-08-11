@@ -1,17 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { RefreshCw, Calendar, Search, Filter, MapPin, Clock } from 'lucide-react'
-import { useIPLData } from '@/hooks/useIPLData'
+import { Search, Filter, MapPin, Clock } from 'lucide-react'
+import { useIPLData } from '@/contexts/IPLDataContext'
 import MatchSchedule from '@/components/MatchSchedule'
+import PageHeader from '@/components/PageHeader'
+import LoadingSpinner from '@/components/LoadingSpinner'
 import { Match } from '@/types'
 
 export default function SchedulePage() {
-  const { schedule, loading, lastUpdated, refetch } = useIPLData()
+  const { schedule, loading, lastUpdated } = useIPLData()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
-  // Filter matches based on search and status
   const filteredMatches = schedule.filter((match: Match) => {
     const matchesSearch = 
       match.team1.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -51,38 +52,15 @@ export default function SchedulePage() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Match Schedule</h1>
-            <p className="text-gray-600 mt-2">Complete tournament schedule and fixtures</p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-xs text-gray-500">Last updated</p>
-              <p className="text-sm font-medium text-gray-700">
-                {lastUpdated.toLocaleTimeString()}
-              </p>
-            </div>
-            <button
-              onClick={refetch}
-              disabled={loading}
-              className="p-2 rounded-full bg-ipl-blue hover:bg-blue-700 disabled:opacity-50 transition-colors text-white"
-            >
-              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Match Schedule"
+        description="Complete tournament schedule and fixtures"
+        lastUpdated={lastUpdated}
+        loading={loading}
+      />
 
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-ipl-blue" />
-            <p className="text-gray-600">Loading schedule...</p>
-          </div>
-        </div>
+        <LoadingSpinner message="Loading schedule..." />
       ) : (
         <div className="space-y-8">
           {/* Statistics */}

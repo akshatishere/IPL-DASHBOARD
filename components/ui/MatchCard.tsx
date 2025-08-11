@@ -1,7 +1,7 @@
 import { Match } from '@/types'
 import { STATUS_COLORS, COMMON_CLASSES, MATCH_DISPLAY_CONFIG } from '@/constants'
 import { Clock, MapPin } from 'lucide-react'
-import { format, parseISO } from 'date-fns'
+
 import TeamDisplay from './TeamDisplay'
 
 interface MatchCardProps {
@@ -17,7 +17,7 @@ interface MatchCardProps {
 export default function MatchCard({
   match,
   variant = 'default',
-  showDate = true,
+
   showTime = true,
   showVenue = true,
   showResult = true,

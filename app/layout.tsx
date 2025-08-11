@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
+import { IPLDataProvider } from '@/contexts/IPLDataContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,12 +19,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50">
-          <Navbar />
-          <main className="pt-4">
-            {children}
-          </main>
-        </div>
+        <IPLDataProvider>
+          <div className="min-h-screen bg-gray-50">
+            <Navbar />
+            <main className="pt-4">
+              {children}
+            </main>
+          </div>
+        </IPLDataProvider>
       </body>
     </html>
   )

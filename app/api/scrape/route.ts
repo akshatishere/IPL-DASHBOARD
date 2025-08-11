@@ -4,16 +4,16 @@ import cache from '@/utils/cache'
 
 // Dummy data as fallback
 const dummyTeams: Team[] = [
-  { id: '1', name: 'Mumbai Indians', shortName: 'MI', logo: 'https://assets.iplt20.com/ipl/MI/logos/large.png' },
-  { id: '2', name: 'Chennai Super Kings', shortName: 'CSK', logo: 'https://assets.iplt20.com/ipl/CSK/logos/large.png' },
-  { id: '3', name: 'Royal Challengers Bangalore', shortName: 'RCB', logo: 'https://assets.iplt20.com/ipl/RCB/logos/large.png' },
-  { id: '4', name: 'Kolkata Knight Riders', shortName: 'KKR', logo: 'https://assets.iplt20.com/ipl/KKR/logos/large.png' },
-  { id: '5', name: 'Delhi Capitals', shortName: 'DC', logo: 'https://assets.iplt20.com/ipl/DC/logos/large.png' },
-  { id: '6', name: 'Punjab Kings', shortName: 'PBKS', logo: 'https://assets.iplt20.com/ipl/PBKS/logos/large.png' },
-  { id: '7', name: 'Rajasthan Royals', shortName: 'RR', logo: 'https://assets.iplt20.com/ipl/RR/logos/large.png' },
-  { id: '8', name: 'Sunrisers Hyderabad', shortName: 'SRH', logo: 'https://assets.iplt20.com/ipl/SRH/logos/large.png' },
-  { id: '9', name: 'Gujarat Titans', shortName: 'GT', logo: 'https://assets.iplt20.com/ipl/GT/logos/large.png' },
-  { id: '10', name: 'Lucknow Super Giants', shortName: 'LSG', logo: 'https://assets.iplt20.com/ipl/LSG/logos/large.png' }
+  { id: '1', name: 'Mumbai Indians', shortName: 'MI', logo: '' },
+  { id: '2', name: 'Chennai Super Kings', shortName: 'CSK', logo: '' },
+  { id: '3', name: 'Royal Challengers Bangalore', shortName: 'RCB', logo: '' },
+  { id: '4', name: 'Kolkata Knight Riders', shortName: 'KKR', logo: '' },
+  { id: '5', name: 'Delhi Capitals', shortName: 'DC', logo: '' },
+  { id: '6', name: 'Punjab Kings', shortName: 'PBKS', logo: '' },
+  { id: '7', name: 'Rajasthan Royals', shortName: 'RR', logo: '' },
+  { id: '8', name: 'Sunrisers Hyderabad', shortName: 'SRH', logo: '' },
+  { id: '9', name: 'Gujarat Titans', shortName: 'GT', logo: '' },
+  { id: '10', name: 'Lucknow Super Giants', shortName: 'LSG', logo: '' }
 ]
 
 const dummyMatches: Match[] = [
@@ -182,7 +182,6 @@ const dummyPointsTable: PointsTableEntry[] = [
   }
 ]
 
-// Enhanced dummy data for bonus features
 const dummyHistoricalMatches: HistoricalMatch[] = [
   {
     id: 'hist1',
@@ -309,19 +308,14 @@ const dummyTeamStats: TeamStats[] = [
 
 async function getIPLData() {
   try {
-    // Check cache first
     const cacheKey = 'ipl_data'
     const cachedData = cache.get(cacheKey)
     if (cachedData) {
-      console.log('Returning cached data')
       return cachedData
     }
-
-    console.log('Generating fresh dummy data')
     
-    // Prepare data with dummy content
     const data = {
-      liveMatch: null, // No live match in dummy data
+      liveMatch: null,
       upcomingMatches: dummyMatches.slice(0, 3),
       pointsTable: dummyPointsTable,
       schedule: dummyMatches,
@@ -329,15 +323,10 @@ async function getIPLData() {
       teamStats: dummyTeamStats
     }
 
-    // Cache the data for 5 minutes
     cache.set(cacheKey, data, 5 * 60 * 1000)
-    
     return data
     
   } catch (error) {
-    console.error('Error generating IPL data:', error)
-    
-    // Return dummy data as fallback
     const fallbackData = {
       liveMatch: null,
       upcomingMatches: dummyMatches.slice(0, 3),
@@ -347,9 +336,7 @@ async function getIPLData() {
       teamStats: dummyTeamStats
     }
 
-    // Cache fallback data for 2 minutes
     cache.set('ipl_data', fallbackData, 2 * 60 * 1000)
-    
     return fallbackData
   }
 }
@@ -365,8 +352,6 @@ export async function GET() {
       cacheStats: cache.getStats()
     })
   } catch (error) {
-    console.error('API Error:', error)
-    
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch IPL data',

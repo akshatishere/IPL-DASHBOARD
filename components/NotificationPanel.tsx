@@ -27,13 +27,13 @@ export default function NotificationPanel() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
-        return 'border-red-500 bg-red-50'
+        return 'border-red-500 bg-red-50 text-red-800'
       case 'medium':
-        return 'border-yellow-500 bg-yellow-50'
+        return 'border-yellow-500 bg-yellow-50 text-yellow-800'
       case 'low':
-        return 'border-blue-500 bg-blue-50'
+        return 'border-blue-500 bg-blue-50 text-blue-800'
       default:
-        return 'border-gray-300 bg-gray-50'
+        return 'border-gray-300 bg-gray-50 text-gray-800'
     }
   }
 

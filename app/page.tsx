@@ -1,12 +1,14 @@
 'use client'
 
-import { RefreshCw, Clock, Trophy, Calendar, TrendingUp, Users, Bell } from 'lucide-react'
-import { useIPLData } from '@/hooks/useIPLData'
+import { Clock, Trophy, Calendar, TrendingUp, Users, Bell } from 'lucide-react'
+import { useIPLData } from '@/contexts/IPLDataContext'
 import { useNotifications } from '@/hooks/useNotifications'
+import PageHeader from '@/components/PageHeader'
+import LoadingSpinner from '@/components/LoadingSpinner'
 import Link from 'next/link'
 
 export default function Home() {
-  const { liveMatch, upcomingMatches, pointsTable, schedule, loading, lastUpdated, refetch, cacheStats } = useIPLData()
+  const { liveMatch, upcomingMatches, pointsTable, schedule, loading, lastUpdated } = useIPLData()
   const { addTestNotification } = useNotifications()
 
   const stats = [
@@ -77,68 +79,27 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">IPL Dashboard</h1>
-            <p className="text-gray-600 mt-2">Real-time T20 match information and statistics</p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-xs text-gray-500">Last updated</p>
-              <p className="text-sm font-medium text-gray-700">
-                {lastUpdated.toLocaleTimeString()}
-              </p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={addTestNotification}
-                className="p-2 rounded-full bg-green-600 hover:bg-green-700 transition-colors text-white"
-                title="Add Test Notification"
-              >
-                <Bell className="w-5 h-5" />
-              </button>
-              <button
-                onClick={refetch}
-                disabled={loading}
-                className="p-2 rounded-full bg-ipl-blue hover:bg-blue-700 disabled:opacity-50 transition-colors text-white"
-              >
-                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-              </button>
-            </div>
-          </div>
-        </div>
+      <PageHeader
+        title="IPL Dashboard"
+        description="Real-time T20 match information and statistics"
+        lastUpdated={lastUpdated}
+        loading={loading}
+      />
+
+      <div className="flex items-center justify-end mb-4">
+        <button
+          onClick={addTestNotification}
+          className="p-2 rounded-full bg-green-600 hover:bg-green-700 transition-colors text-white"
+          title="Add Test Notification"
+        >
+          <Bell className="w-5 h-5" />
+        </button>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-ipl-blue" />
-            <p className="text-gray-600">Loading IPL data...</p>
-          </div>
-        </div>
+        <LoadingSpinner message="Loading IPL data..." />
       ) : (
         <>
-          {/* Cache Status */}
-          {cacheStats && (
-            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-blue-900">Cache Status</h3>
-                  <p className="text-sm text-blue-700">
-                    Cached entries: {cacheStats.size} | 
-                    Keys: {cacheStats.keys.slice(0, 3).join(', ')}
-                    {cacheStats.keys.length > 3 && '...'}
-                  </p>
-                </div>
-                <div className="text-xs text-blue-600">
-                  Data will refresh every 5 minutes
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {stats.map((stat) => (

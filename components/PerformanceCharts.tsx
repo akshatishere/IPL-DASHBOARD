@@ -18,17 +18,16 @@ import {
   AreaChart,
   Area
 } from 'recharts'
-import { PointsTableEntry, TeamStats } from '@/types'
+import { PointsTableEntry } from '@/types'
 import { Trophy, TrendingUp, Target } from 'lucide-react'
 
 interface PerformanceChartsProps {
   pointsTable: PointsTableEntry[]
-  teamStats?: TeamStats[]
 }
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF6B6B', '#4ECDC4', '#45B7D1']
 
-export default function PerformanceCharts({ pointsTable, teamStats }: PerformanceChartsProps) {
+export default function PerformanceCharts({ pointsTable }: PerformanceChartsProps) {
   const [activeTab, setActiveTab] = useState('points')
 
   // Prepare data for different charts
@@ -59,12 +58,12 @@ export default function PerformanceCharts({ pointsTable, teamStats }: Performanc
     }))
     .sort((a, b) => b.netRunRate - a.netRunRate)
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ color: string; name: string; value: number }>; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-semibold">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry: { color: string; name: string; value: number }, index: number) => (
             <p key={index} style={{ color: entry.color }}>
               {entry.name}: {entry.value}
             </p>
@@ -221,7 +220,7 @@ export default function PerformanceCharts({ pointsTable, teamStats }: Performanc
             <div className="card">
               <h3 className="text-lg font-semibold mb-4">Performance Metrics</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {pointsTable.slice(0, 3).map((entry, index) => (
+                {pointsTable.slice(0, 3).map((entry) => (
                   <div key={entry.team.id} className="text-center p-4 bg-gray-50 rounded-lg">
                     <div className="text-2xl font-bold text-gray-900">{entry.team.shortName}</div>
                     <div className="text-sm text-gray-600 mt-2">
